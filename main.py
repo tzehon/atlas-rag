@@ -87,9 +87,12 @@ if all_fields_filled:
             st.success('Vector Store instantiated!')
 
         with st.spinner('Storing as vector embeddings...'):
-            vector_store_index = VectorStoreIndex.from_documents(
-                sample_data, storage_context=vector_store_context, show_progress=True
-            )
+            if 'vector_store_index' not in st.session_state:
+                st.session_state.vector_store_index = VectorStoreIndex.from_documents(
+                    sample_data, storage_context=vector_store_context, show_progress=True
+                )
+            else:
+                vector_store_index = st.session_state.vector_store_index
             st.success('Vector embeddings stored!')
 
         with st.spinner('Creating vector search index...'):
