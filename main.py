@@ -123,7 +123,7 @@ else:
 def response_generator(prompt):
     vector_store_index = st.session_state.vector_store_index
     # Instantiate Atlas Vector Search as a retriever
-    vector_store_retriever = VectorIndexRetriever(index=vector_store_index, similarity_top_k=5)
+    vector_store_retriever = VectorIndexRetriever(index=vector_store_index, similarity_top_k=50)
     # Pass the retriever into the query engine
     query_engine = RetrieverQueryEngine(retriever=vector_store_retriever)
     # Prompt the LLM
@@ -131,7 +131,7 @@ def response_generator(prompt):
     print(response)
     print("\nSource documents: ")
     pprint.pprint(response.source_nodes)
-    return response
+    return response.response
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -140,14 +140,15 @@ if "messages" not in st.session_state:
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        st.write(message["content"])
 
 # React to user input
 if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.write(prompt)
 
     with st.chat_message("assistant"):
-        response = st.markdown(response_generator(prompt))
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        answer = response_generator(prompt)
+        st.write(answer)
+    st.session_state.messages.append({"role": "assistant", "content": answer})
