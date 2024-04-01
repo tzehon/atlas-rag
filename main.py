@@ -1,9 +1,6 @@
 import streamlit as st
 import gcsfs
-import getpass, os, pymongo, pprint
-import inspect
-import random
-import time
+import os, pymongo, pprint
 
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext
 from llama_index.core.settings import Settings
@@ -13,20 +10,6 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
-from pymongo.errors import OperationFailure
-
-# Streamed response emulator
-def response_generator():
-    response = random.choice(
-        [
-            "Hello there! How can I assist you today?",
-            "Hi, human! Is there anything I can help you with?",
-            "Do you need help?",
-        ]
-    )
-    for word in response.split():
-        yield word + " "
-        time.sleep(0.05)
 
 st.set_page_config(page_title="Atlas with RAG", page_icon=":computer:")
 
@@ -117,6 +100,19 @@ if all_fields_filled:
 else:
     st.write('Please fill out all fields.')
 
+def response_generator(prompt):
+    vector_store_index = st.session_state.vector_store_index
+    # Instantiate Atlas Vector Search as a retriever
+    vector_store_retriever = VectorIndexRetriever(index=vector_store_index, similarity_top_k=5)
+    # Pass the retriever into the query engine
+    query_engine = RetrieverQueryEngine(retriever=vector_store_retriever)
+    # Prompt the LLM
+    response = query_engine.query(prompt)
+    print(response)
+    print("\nSource documents: ")
+    pprint.pprint(response.source_nodes)
+    return response
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -128,14 +124,10 @@ for message in st.session_state.messages:
 
 # React to user input
 if prompt := st.chat_input("What is up?"):
-    # Display user message in chat message container
-    st.chat_message("user").markdown(prompt)
-    # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-    response = f"Echo: {prompt}"
-    # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        response = st.write_stream(response_generator())
-    # Add assistant response to chat history
+        response = st.write_markdown(response_generator(prompt))
     st.session_state.messages.append({"role": "assistant", "content": response})
