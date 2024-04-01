@@ -44,35 +44,49 @@ all_fields_filled = (
     bucket != ''
 )
 
+def configure_models():
+    Settings.llm = OpenAI()
+    Settings.embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
+    Settings.chunk_size = 100
+    Settings.chunk_overlap = 10
+
+def vector_store(conn_string, db, coll):
+    mongodb_client = pymongo.MongoClient(conn_string)
+    mongodb_coll = mongodb_client[db][coll]
+    atlas_vector_search = MongoDBAtlasVectorSearch(
+        mongodb_client,
+        db_name = db,
+        collection_name = coll,
+        index_name = f'{db}_{coll}_index'
+    )
+    vector_store_context = StorageContext.from_defaults(vector_store=atlas_vector_search)
+    return mongodb_coll, vector_store_context
+
+def vector_embeddings():
+    return ""
+
+@st.cache_data
+def load_data(proj_id, bucket):
+    gcs_fs = gcsfs.GCSFileSystem(project=proj_id)
+    sample_data = SimpleDirectoryReader(
+        input_dir=bucket,
+        fs=gcs_fs
+    ).load_data()
+    return sample_data
+
 if all_fields_filled:
     os.environ["OPENAI_API_KEY"] = openai_api_key
     if st.button('Init'):
         with st.spinner('Configuring chunking and selecting embedding model...'):
-            Settings.llm = OpenAI()
-            Settings.embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
-            Settings.chunk_size = 100
-            Settings.chunk_overlap = 10
+            configure_models()
             st.success('Chunking and embedding model configured!')
 
         with st.spinner('Loading files...'):
-            gcs_fs = gcsfs.GCSFileSystem(project=proj_id)
-            # st.write(gcs_fs.ls(bucket))
-            sample_data = SimpleDirectoryReader(
-                input_dir=bucket,
-                fs=gcs_fs
-            ).load_data()
+            sample_data = load_data(proj_id, bucket)
             st.success('Files loaded!')
 
         with st.spinner('Instantiating Vector Store...'):
-            mongodb_client = pymongo.MongoClient(conn_string)
-            mongodb_coll = mongodb_client[db][coll]
-            atlas_vector_search = MongoDBAtlasVectorSearch(
-                mongodb_client,
-                db_name = db,
-                collection_name = coll,
-                index_name = f'{db}_{coll}_index'
-            )
-            vector_store_context = StorageContext.from_defaults(vector_store=atlas_vector_search)
+            mongodb_coll, vector_store_context = vector_store(conn_string, db, coll)
             st.success('Vector Store instantiated!')
 
         with st.spinner('Storing as vector embeddings...'):
@@ -135,5 +149,5 @@ if prompt := st.chat_input("What is up?"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        response = st.write_markdown(response_generator(prompt))
+        response = st.markdown(response_generator(prompt))
     st.session_state.messages.append({"role": "assistant", "content": response})
