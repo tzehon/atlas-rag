@@ -123,7 +123,7 @@ else:
 def response_generator(prompt):
     vector_store_index = st.session_state.vector_store_index
     # Instantiate Atlas Vector Search as a retriever
-    vector_store_retriever = VectorIndexRetriever(index=vector_store_index, similarity_top_k=50)
+    vector_store_retriever = VectorIndexRetriever(index=vector_store_index, similarity_top_k=5)
     # Pass the retriever into the query engine
     query_engine = RetrieverQueryEngine(retriever=vector_store_retriever)
     # Prompt the LLM
