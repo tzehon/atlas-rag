@@ -1,6 +1,7 @@
 import streamlit as st
 import gcsfs
 import os, pymongo, pprint
+import time
 
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext
 from llama_index.core.settings import Settings
@@ -132,7 +133,10 @@ def response_generator(prompt):
         print(response)
         print("\nSource documents: ")
         pprint.pprint(response.source_nodes)
-        return response.response
+        for word in response.response.split():
+            yield word + " "
+            time.sleep(0.05)
+        # return response.response
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -150,6 +154,5 @@ if prompt := st.chat_input("What is up?"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        answer = response_generator(prompt)
-        st.markdown(answer)
-    st.session_state.messages.append({"role": "assistant", "content": answer})
+        response = st.write_stream(response_generator(prompt))
+    st.session_state.messages.append({"role": "assistant", "content": response})
