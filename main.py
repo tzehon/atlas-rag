@@ -19,21 +19,27 @@ openai_api_key = st.text_input("OpenAI API Key", key="api_key", type="password")
 
 conn_string = st.text_input("MongoDB Atlas Connection String", type="password")
 
-st.write('Database: llamaindex_db')
-st.write('Collection: test')
-st.write('Vector index: vector_index')
-
 col1, col2 = st.columns(2)
 
 with col1:
-    proj_id = st.text_input("GCP Project ID")
+    db = st.text_input("Database")
 
 with col2:
+    coll = st.text_input("Collection")
+
+col3, col4 = st.columns(2)
+
+with col3:
+    proj_id = st.text_input("GCP Project ID")
+
+with col4:
     bucket = st.text_input("GCS Bucket")
 
 all_fields_filled = (
     openai_api_key != '' and
     conn_string != '' and
+    db != '' and
+    coll != '' and
     proj_id != '' and
     bucket != ''
 )
@@ -59,12 +65,12 @@ if all_fields_filled:
 
         with st.spinner('Instantiating Vector Store...'):
             mongodb_client = pymongo.MongoClient(conn_string)
-            mongodb_coll = mongodb_client['llamaindex_db']['test']
+            mongodb_coll = mongodb_client[db][coll]
             atlas_vector_search = MongoDBAtlasVectorSearch(
                 mongodb_client,
-                db_name = "llamaindex_db",
-                collection_name = "test",
-                index_name = "vector_index"
+                db_name = db,
+                collection_name = coll,
+                index_name = f'{db}_{coll}_index'
             )
             vector_store_context = StorageContext.from_defaults(vector_store=atlas_vector_search)
             st.success('Vector Store instantiated!')
@@ -80,7 +86,7 @@ if all_fields_filled:
 
         with st.spinner('Creating vector search index...'):
             mongo_index_def = {
-                'name': 'vector_index',
+                'name': f'{db}_{coll}_index',
                 'definition': {
                     'mappings': {
                         'dynamic': True,
