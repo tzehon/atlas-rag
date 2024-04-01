@@ -127,11 +127,12 @@ def response_generator(prompt):
     # Pass the retriever into the query engine
     query_engine = RetrieverQueryEngine(retriever=vector_store_retriever)
     # Prompt the LLM
-    response = query_engine.query(prompt)
-    print(response)
-    print("\nSource documents: ")
-    pprint.pprint(response.source_nodes)
-    return response.response
+    with st.spinner(text="Thinking..."):
+        response = query_engine.query(prompt)
+        print(response)
+        print("\nSource documents: ")
+        pprint.pprint(response.source_nodes)
+        return response.response
 
 # Initialize chat history
 if "messages" not in st.session_state:
