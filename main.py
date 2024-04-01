@@ -133,9 +133,9 @@ def response_generator(prompt):
         print(response)
         print("\nSource documents: ")
         pprint.pprint(response.source_nodes)
-        for word in response.response.split():
-            yield word + " "
-            time.sleep(0.05)
+    for word in response.response.split():
+        yield word + " "
+        time.sleep(0.05)
         # return response.response
 
 # Initialize chat history
