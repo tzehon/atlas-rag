@@ -66,7 +66,6 @@ def vector_store(conn_string, db, coll):
 def vector_embeddings():
     return ""
 
-@st.cache_data
 def load_data(proj_id, bucket):
     gcs_fs = gcsfs.GCSFileSystem(project=proj_id)
     sample_data = SimpleDirectoryReader(
