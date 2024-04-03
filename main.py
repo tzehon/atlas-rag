@@ -6,11 +6,11 @@ import time
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext
 from llama_index.core.settings import Settings
 from llama_index.core.retrievers import VectorIndexRetriever
-from llama_index.core.vector_stores import MetadataFilter, MetadataFilters, ExactMatchFilter, FilterOperator
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
+from llama_index.core.chat_engine import ContextChatEngine
 
 st.set_page_config(page_title="Atlas with RAG", page_icon=":computer:")
 
@@ -125,17 +125,23 @@ def response_generator(prompt):
     # Instantiate Atlas Vector Search as a retriever
     vector_store_retriever = VectorIndexRetriever(index=vector_store_index, similarity_top_k=5)
     # Pass the retriever into the query engine
-    query_engine = RetrieverQueryEngine(retriever=vector_store_retriever)
+    # query_engine = RetrieverQueryEngine(retriever=vector_store_retriever)
+    chat_engine = ContextChatEngine.from_defaults(retriever=vector_store_retriever)
     # Prompt the LLM
     with st.spinner(text="Thinking..."):
-        response = query_engine.query(prompt)
-        print(response)
-        print("\nSource documents: ")
-        pprint.pprint(response.source_nodes)
-    for word in response.response.split():
-        yield word + " "
-        time.sleep(0.05)
-        # return response.response
+        streaming_response = chat_engine.stream_chat(prompt)
+        # response = query_engine.query(prompt)
+        # print(response)
+        # print("\nSource documents: ")
+        # pprint.pprint(response.source_nodes)
+    # for word in response.response.split():
+        # yield word + " "
+        # time.sleep(0.05)
+    for text in streaming_response.response_gen:
+        yield text
+    # return streaming_response.response_gen
+
+    # return streaming_response
 
 # Initialize chat history
 if "messages" not in st.session_state:
