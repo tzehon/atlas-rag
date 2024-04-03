@@ -13,7 +13,7 @@ from llama_index.core.chat_engine import ContextChatEngine
 
 st.set_page_config(page_title="Atlas with RAG", page_icon=":computer:")
 
-st.title("Powered by MongoDB Atlas")
+st.title("Powered by MongoDB Atlas 👋")
 
 openai_api_key = st.text_input("OpenAI API Key", key="api_key", type="password")
 
