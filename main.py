@@ -76,9 +76,9 @@ def load_data(proj_id, bucket):
 if all_fields_filled:
     os.environ["OPENAI_API_KEY"] = openai_api_key
     if st.button('Init'):
-        with st.spinner('Configuring chunking and selecting embedding model...'):
+        with st.spinner('Configuring chunking, embedding and LLM models...'):
             configure_models()
-            st.success('Chunking and embedding model configured!')
+            st.success('Chunking, embedding and LLM models configured!')
 
         with st.spinner('Loading files...'):
             sample_data = load_data(proj_id, bucket)
@@ -115,7 +115,7 @@ if all_fields_filled:
             }
 
             mongodb_coll.create_search_index(mongo_index_def)
-            st.success('Search index is building!')
+            st.success('Search index is building! Checkout the Atlas UI 😊')
 else:
     st.write('Please fill out all fields.')
 
