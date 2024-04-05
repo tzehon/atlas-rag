@@ -15,25 +15,25 @@ st.set_page_config(page_title="Atlas with RAG", page_icon=":computer:")
 
 st.title("Powered by MongoDB Atlas 👋")
 
-openai_api_key = st.text_input("OpenAI API Key", key="api_key", type="password")
+openai_api_key = st.text_input("OpenAI API Key :key:", key="api_key", type="password")
 
-conn_string = st.text_input("MongoDB Atlas Connection String", type="password", help="mongodb+srv://<username>:<password>@xxx.yyy.mongodb.net/?retryWrites=true&w=majority")
+conn_string = st.text_input("MongoDB Atlas Connection String :thread:", type="password", help="mongodb+srv://<username>:<password>@xxx.yyy.mongodb.net/?retryWrites=true&w=majority")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    db = st.text_input("Database", help="Doesn't have to exist beforehand")
+    db = st.text_input("Database :file_cabinet:", help="Doesn't have to exist beforehand")
 
 with col2:
-    coll = st.text_input("Collection", help="Doesn't have to exist beforehand")
+    coll = st.text_input("Collection :books:", help="Doesn't have to exist beforehand")
 
 col3, col4 = st.columns(2)
 
 with col3:
-    proj_id = st.text_input("GCP Project ID", help="Project ID pls, not Project Name!")
+    proj_id = st.text_input("GCP Project ID :cloud:", help="Project ID pls, not Project Name!")
 
 with col4:
-    bucket = st.text_input("GCS Bucket", help="Include a trailing slash", placeholder="bucket-name/")
+    bucket = st.text_input("GCS Bucket :bucket:", help="Include a trailing slash", placeholder="bucket-name/")
 
 all_fields_filled = (
     openai_api_key != '' and
