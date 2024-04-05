@@ -17,23 +17,23 @@ st.title("Powered by MongoDB Atlas 👋")
 
 openai_api_key = st.text_input("OpenAI API Key", key="api_key", type="password")
 
-conn_string = st.text_input("MongoDB Atlas Connection String", type="password")
+conn_string = st.text_input("MongoDB Atlas Connection String", type="password", help="mongodb+srv://<username>:<password>@xxx.yyy.mongodb.net/?retryWrites=true&w=majority")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    db = st.text_input("Database")
+    db = st.text_input("Database", help="Doesn't have to exist beforehand")
 
 with col2:
-    coll = st.text_input("Collection")
+    coll = st.text_input("Collection", help="Doesn't have to exist beforehand")
 
 col3, col4 = st.columns(2)
 
 with col3:
-    proj_id = st.text_input("GCP Project ID")
+    proj_id = st.text_input("GCP Project ID", help="Project ID pls, not Project Name!")
 
 with col4:
-    bucket = st.text_input("GCS Bucket")
+    bucket = st.text_input("GCS Bucket", help="Include a trailing slash", placeholder="bucket-name/")
 
 all_fields_filled = (
     openai_api_key != '' and
@@ -141,7 +141,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # React to user input
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("Ask me something!"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
