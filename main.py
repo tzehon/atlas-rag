@@ -45,7 +45,7 @@ all_fields_filled = (
 )
 
 def configure_models():
-    Settings.llm = OpenAI()
+    Settings.llm = OpenAI(model="gpt-4", temperature=0)
     Settings.embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
     Settings.chunk_size = 100
     Settings.chunk_overlap = 10
