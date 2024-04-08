@@ -1,3 +1,5 @@
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://atlas-rag-aq5fzeohyxbu8ghrzrv53p.streamlit.app/)
+
 ## Overview
 
 This app is designed to demonstrate the power of Retrieval-Augmented Generation (RAG) architecture. It enables users to bring their own OpenAI API keys, MongoDB Atlas clusters, and PDF documents stored in Google Cloud Storage (GCS) buckets. Through MongoDB Atlas's vector search capabilities, the app provides a unified way to quickly query, retrieve semantically similar results, and interact with information extracted from PDFs, using OpenAI's LLMs.
