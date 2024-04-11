@@ -123,7 +123,9 @@ def response_generator(prompt):
     vector_store_index = st.session_state.vector_store_index
     # Instantiate Atlas Vector Search as a retriever
     vector_store_retriever = VectorIndexRetriever(index=vector_store_index, similarity_top_k=20)
-    chat_engine = ContextChatEngine.from_defaults(retriever=vector_store_retriever)
+    chat_engine = ContextChatEngine.from_defaults(
+        retriever=vector_store_retriever,
+        system_prompt="You are a chatbot, able to answer from the context shared and also the prior knowledge of your LLM")
     # Prompt the LLM
     with st.spinner(text="Thinking..."):
         streaming_response = chat_engine.stream_chat(prompt)
