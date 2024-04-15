@@ -27,13 +27,16 @@ with col1:
 with col2:
     coll = st.text_input("Collection :books:", help="Doesn't have to exist beforehand")
 
-col3, col4 = st.columns(2)
+col3, col4, col5 = st.columns(3)
 
 with col3:
     proj_id = st.text_input("GCP Project ID :cloud:", help="Project ID pls, not Project Name!")
 
 with col4:
     bucket = st.text_input("GCS Bucket :bucket:", help="Include a trailing slash", placeholder="bucket-name/")
+
+with col5:
+    access_token = st.text_input("GCP Access Token :key:", type="password", help="Optional. If GCS bucket is not public, retrieve token by issuing 'gcloud auth login' and 'gcloud auth print-access-token'")
 
 all_fields_filled = (
     openai_api_key != '' and
@@ -66,7 +69,10 @@ def vector_embeddings():
     return ""
 
 def load_data(proj_id, bucket):
-    gcs_fs = gcsfs.GCSFileSystem(project=proj_id)
+    if access_token:
+        gcs_fs = gcsfs.GCSFileSystem(project=proj_id, token=access_token)
+    else:
+        gcs_fs = gcsfs.GCSFileSystem(project=proj_id)
     sample_data = SimpleDirectoryReader(
         input_dir=bucket,
         fs=gcs_fs
