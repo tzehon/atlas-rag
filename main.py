@@ -36,7 +36,11 @@ with col4:
     bucket = st.text_input("GCS Bucket :bucket:", help="Include a trailing slash", placeholder="bucket-name/")
 
 with col5:
-    access_token = st.text_input("GCP Access Token :key:", type="password", placeholder="Optional - for private buckets", help="If GCS bucket is private, retrieve token by issuing 'gcloud auth login' and 'gcloud auth print-access-token'")
+    access_token = st.text_input(
+        "GCP Access Token :key:",
+        type="password", placeholder="Optional",
+        help="If GCS bucket is private, retrieve token by issuing 'gcloud auth login' and 'gcloud auth print-access-token'"
+    )
 
 all_fields_filled = (
     openai_api_key != '' and
