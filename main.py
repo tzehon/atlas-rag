@@ -15,7 +15,7 @@ st.set_page_config(page_title="Atlas with RAG", page_icon=":computer:")
 
 st.title("Powered by MongoDB Atlas 👋")
 
-openai_api_key = st.text_input("API Key :key:", key="api_key", type="password")
+openai_api_key = st.text_input("OpenAI API Key :key:", key="api_key", type="password")
 
 conn_string = st.text_input("MongoDB Atlas Connection String :thread:", type="password", help="mongodb+srv://<username>:<password>@xxx.yyy.mongodb.net/?retryWrites=true&w=majority")
 
